@@ -3,8 +3,9 @@ Definition of urls for python_webapp_django.
 """
 
 from datetime import datetime
-from django.conf.urls import url
-import django.contrib.auth.views
+from django.urls import include, re_path
+import django.contrib.auth
+from django.contrib.auth.views import LoginView
 from django.views.static import serve
 from django.conf import settings
 
@@ -18,29 +19,18 @@ import app.views
 
 urlpatterns = [
     # Examples:
-    url(r'^$', app.views.home, name='home'),
-    url(r'^contact$', app.views.contact, name='contact'),
-    url(r'^about', app.views.about, name='about'),
-    url(r'^login/$',
-        django.contrib.auth.views.login,
-        {
-            'template_name': 'app/login.html',
-            'authentication_form': app.forms.BootstrapAuthenticationForm,
-            'extra_context':
-            {
-                'title': 'Log in',
-                'year': datetime.now().year,
-            }
-        },
-        name='login'),
-    url(r'^logout$',
-        django.contrib.auth.views.logout,
+    re_path(r'^$', app.views.home, name='home'),
+    re_path(r'^contact$', app.views.contact, name='contact'),
+    re_path(r'^about', app.views.about, name='about'),
+    re_path(r'^login/$', LoginView.as_view(template_name='app/login.html'), name='login'),
+    re_path(r'^logout$',
+        django.contrib.auth.logout,
         {
             'next_page': '/',
         },
         name='logout'),
 
-    url(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
+    re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 
 
     # Uncomment the admin/doc line below to enable admin documentation:
